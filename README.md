@@ -1,3 +1,16 @@
+#Read me
+
+git clone https://github.com/sandikoprastyo/RN-Challenge.git
+
+yarn install or npm intall
+
+yarn start or npm start
+
+and
+
+scan barcode use expo in your phone
+
+
 # RN-Challenge
 WellMart is a team of fun, fast, and friendly builders. Everyone from interns to the CEO have some level of technical skill. Everyone is judged based on their creation and outcome. Not their background. Not their appearances.
 
