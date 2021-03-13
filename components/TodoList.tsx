@@ -1,77 +1,109 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import axios from 'axios';
- 
-const TodoList: React.FC = () => {
-    const [todo, setTodo] = React.useState([]);
+import { StackScreenProps } from '@react-navigation/stack';
+import { BottomTabParamList } from '../types';
 
-    const _getTodo = () =>{
-     axios.get('https://6006a3a43698a80017de1b9c.mockapi.io/user/register/todo')
-    .then((res)=>{
-        console.log(res.data)
-        setTodo(res.data)
-    }).catch((err)=>{
-        console.log(err.message)
-        Alert.alert(err.message)
-    })
+ 
+
+export default function TodoList({
+  navigation,
+}: StackScreenProps<BottomTabParamList, 'Dashboard'>) {
+  const [todo, setTodo] = React.useState([]);
+  const [stateTodo, setStateTodo] = React.useState('');
+
+  const _getTodo = () => {
+    axios
+      .get('https://6006a3a43698a80017de1b9c.mockapi.io/user/register/todo')
+      .then((res) => {
+        // console.log(res.data)
+        setTodo(res.data);
+      })
+      .catch((err) => {
+        //  console.log(err.message)
+        Alert.alert(err.message);
+      });
+  };
+
+  React.useEffect(() => {
+    _getTodo();
+  }, []);
+
+  const _deleteTodo = (id: number) => {
+    axios
+      .delete(
+        `https://6006a3a43698a80017de1b9c.mockapi.io/user/register/todo/${id}`,
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .then(() => {
+        _getTodo();
+      });
+  };
+
+  const _handleDelete = (id: number) => {
+    Alert.alert(
+      'DELETE',
+      'Your sure to delete todo ?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => _deleteTodo(id) },
+      ],
+      { cancelable: false },
+    );
+  };
+
+  const _handleEdit = (id: string) => {
+    Alert.alert(id);
+    //navigation.navigate('EditScreen');
+  };
+
+  /* masih bug */
+  const _handleMark = (id: string) => {
+    if (!stateTodo) {
+      setStateTodo('line-through');
+    } else {
+      setStateTodo('');
     }
-
-React.useEffect(()=> {
-    _getTodo();
-},[])
-
-
-const _deleteTodo = (id: number) => {
-  axios
-    .delete(
-      `https://6006a3a43698a80017de1b9c.mockapi.io/user/register/todo/${id}`,
-    )
-    .then((res) => {
-    console.log(res.data)
-    }).then(()=>{
-    _getTodo();
-    })
-};
-
-const _handleDelete = (id: number) => {
-     Alert.alert(
-       'DELETE',
-       'Your sure to delete todo ?',
-       [
-         {
-           text: 'Cancel',
-           onPress: () => console.log('Cancel Pressed'),
-           style: 'cancel',
-         },
-         { text: 'OK', onPress: () => _deleteTodo(id) },
-       ],
-       { cancelable: false },
-     );
- 
-}
-    return ( 
-        <ScrollView>
-            <View>
-               {todo.map((todos, i)=>{
-                   return (
-                     <View key={i}>
-                       <Text style={styles.todos}>{todos.name}</Text>
-                       <View style={styles.action}>
-                         <Text style={styles.edit}>Edit</Text>
-                         <Text
-                           style={styles.delete}
-                           onPress={() => _handleDelete(todos.id)}
-                         >
-                           Delete
-                         </Text>
-                       </View>
-                     </View>
-                   );
-               })}
+  };
+  return (
+    <ScrollView>
+      <View>
+        {todo.map((todos, i) => {
+          return (
+            <View key={i}>
+              <Text
+                style={{ fontSize: 25, textDecorationLine: `${stateTodo}` }}
+              >
+                {todos.name}
+              </Text>
+              <Text style={styles.date}>{todos.date}</Text>
+              <View style={styles.action}>
+                <Text style={styles.edit} onPress={() => _handleEdit(todos.id)}>
+                  Edit
+                </Text>
+                <Text style={styles.mark} onPress={() => _handleMark(todos.id)}>
+                  Mark
+                </Text>
+                <Text
+                  style={styles.delete}
+                  onPress={() => _handleDelete(todos.id)}
+                >
+                  Delete
+                </Text>
+              </View>
             </View>
-        </ScrollView>
-     );
-}
+          );
+        })}
+      </View>
+    </ScrollView>
+  );
+};
  
 const styles = StyleSheet.create({
   action: {
@@ -79,8 +111,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 30,
   },
-  todos:{    
-    fontSize: 20,
+  todos: {
+    fontSize: 25,
+  },
+  date: {
+    fontSize: 10,
   },
   edit: {
     paddingVertical: 10,
@@ -88,6 +123,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     color: 'white',
     backgroundColor: 'blue',
+  },
+  mark: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    color: 'white',
+    borderRadius: 20,
+    backgroundColor: 'green',
   },
   delete: {
     paddingVertical: 10,
@@ -97,5 +139,3 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
   },
 });
-
-export default TodoList;

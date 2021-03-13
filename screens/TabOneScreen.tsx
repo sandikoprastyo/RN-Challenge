@@ -18,6 +18,12 @@ const wait = (timeout: any) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 };
 
+interface FooProp {
+  name: string;
+ date: string;
+}
+
+
 export default function TabOneScreen() {
   const [text, setText] = React.useState('');
   const [refreshing, setRefreshing] = React.useState(false);
@@ -31,6 +37,7 @@ export default function TabOneScreen() {
     axios
       .post('https://6006a3a43698a80017de1b9c.mockapi.io/user/register/todo/', {
         name: text,
+        date: new Date()
       })
       .then((res) => {
         console.log(res.data);
@@ -97,6 +104,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
     width: '70%',
     height: 40,
+    fontSize: 20,
     borderColor: 'gray',
     borderWidth: 1.5,
     borderRadius: 15,
